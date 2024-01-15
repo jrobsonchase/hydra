@@ -38,7 +38,7 @@ sub toGitlabState {
 }
 
 sub common {
-    my ($self, $topbuild, $dependents, $status) = @_;
+    my ($self, $topbuild, $dependents, $status, $cachedEval) = @_;
     my $baseurl = $self->{config}->{'base_uri'} || "http://localhost:3000";
 
     # Find matching configs
@@ -79,6 +79,9 @@ sub common {
         };
 
         while (my $eval = $evals->next) {
+            if (defined($cachedEval) && $cachedEval->id != $eval->id) {
+                next;
+            }
             if (defined $eval->flake) {
                 my $fl = $eval->flake;
                 print STDERR "Flake is $fl\n";
@@ -126,6 +129,16 @@ sub buildStarted {
 
 sub buildFinished {
     common(@_, 2);
+}
+
+sub cachedBuildQueued {
+    my ($self, $evaluation, $build) = @_;
+    common($self, $build, [], 0, $evaluation);
+}
+
+sub cachedBuildFinished {
+    my ($self, $evaluation, $build) = @_;
+    common($self, $build, [], 2, $evaluation);
 }
 
 1;
