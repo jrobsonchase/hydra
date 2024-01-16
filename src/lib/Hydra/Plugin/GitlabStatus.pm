@@ -69,7 +69,7 @@ sub common {
                 $projectId = "$owner/$repo" =~ s/\//%2F/rg;
             }
             my $url = "https://$domain/api/v4/projects/$projectId/statuses/$rev";
-            print STDERR "GitlabStatus POSTing $state to $url\n";
+            print STDERR "GitlabStatus POSTing $jobName $state to $url\n";
             my $req = HTTP::Request->new('POST', $url);
             $req->header('Content-Type' => 'application/json');
             $req->header('Private-Token' => $accessToken);
